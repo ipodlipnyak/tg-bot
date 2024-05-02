@@ -21,8 +21,11 @@ services:
       dockerfile: Dockerfile
     ports:
       - 3000:3000
+    env_file:
+        - app.env
     links:
       - "db"
+      - "rabbit"
     command: /bin/bash -c "npm run start:prod"
 
 volumes:
