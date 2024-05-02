@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { RestListResponseDto } from "./rest-response.dto";
 
 export class TelegramChatDto {
   @ApiProperty({ example: '1111111' })
@@ -42,4 +43,18 @@ export class TelegramEventMessageInputDto {
   update_id: string;
   @ApiProperty({ description: 'Incoming message' })
   message: TelegramMessageDto;
+}
+
+export class MessageDto {
+  @ApiProperty({ example: '10000', description: '' })
+  id: string;
+  @ApiProperty({ description: 'Incoming message' })
+  text: string;
+  @ApiProperty({ example: '10000', description: 'Chat id' })
+  chat_id: string;
+}
+
+export class MessagesListResponseDto extends RestListResponseDto {
+  @ApiProperty({ type: MessageDto, isArray: true, description: 'List of recieved messages' })
+  payload: MessageDto[];
 }

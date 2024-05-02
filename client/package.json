@@ -15,6 +15,7 @@
     "vite-plugin-vuetify": "^1.0.0-alpha.16"
   },
   "dependencies": {
+    "socket.io-client": "^4.7.5",
     "@mdi/font": "7.0.96",
     "@nestjs/cli": "^9.0.0",
     "@nestjs/common": "^9.0.0",

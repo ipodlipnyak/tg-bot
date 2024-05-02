@@ -1,7 +1,9 @@
 <template>
-  <div>
-    Hello
-  </div>
+  <v-container>
+    <v-card>
+      <v-btn href="#">Bot</v-btn>
+    </v-card>
+  </v-container>
 </template>
 
 <script lang="ts">
