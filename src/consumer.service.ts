@@ -2,8 +2,9 @@ import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import amqp, { ChannelWrapper } from 'amqp-connection-manager';
 import { ConfirmChannel } from 'amqplib';
-import { TelegramEventMessageInputDto } from 'src/dto/telegram.dto';
+import { TelegramEventMessageInputDto, TelegramMessageDto } from 'src/dto/telegram.dto';
 import { EventsGateway } from 'src/events.gateway';
+import { TelegramService } from './telegram.service';
 
 @Injectable()
 export class ConsumerService implements OnModuleInit {
@@ -13,6 +14,7 @@ export class ConsumerService implements OnModuleInit {
   constructor(
     private configService: ConfigService,
     private eventsGateway: EventsGateway,
+    private telegramService: TelegramService,
   ) {
     const connection = amqp.connect([this.configService.get('rabbitmq.url')]);
     this.channelWrapper = connection.createChannel();
@@ -23,18 +25,18 @@ export class ConsumerService implements OnModuleInit {
       await this.channelWrapper.addSetup(async (channel: ConfirmChannel) => {
         await channel.assertQueue(this.configService.get('rabbitmq.queue'), { durable: true });
 
-        await channel.consume(this.configService.get('rabbitmq.queue'), async (message) => {
-          if (message) {
-            const text: string = JSON.parse(message.content.toString());
-            this.logger.debug(`Received message: ${ text || '' }`);
-            this.eventsGateway.server.emit('blah', text);
-            channel.ack(message);
+        await channel.consume(this.configService.get('rabbitmq.queue'), async (payload) => {
+          if (payload) {
+            const message: TelegramMessageDto = JSON.parse(payload.content.toString());
+            this.logger.debug(`Received message: ${ message.text || '' }`);
+            this.eventsGateway.server.emit('blah', message.text);
+            await this.telegramService.reply(message.chat.id, `Simon says ${ message.text }`);
+            channel.ack(payload);
           }
         });
       });
-      this.logger.log('Consumer service started and listening for messages.');
-    } catch (err) {
-      this.logger.error('Error starting the consumer:', err);
+    } catch (e) {
+      this.logger.debug(e);
     }
   }
 }

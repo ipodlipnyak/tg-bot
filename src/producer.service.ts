@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import amqp, { ChannelWrapper } from 'amqp-connection-manager';
 import { Channel } from 'amqplib';
 import { ConfigService } from '@nestjs/config';
+import { TelegramMessageDto } from './dto/telegram.dto';
 
 @Injectable()
 export class ProducerService {
@@ -22,15 +23,15 @@ export class ProducerService {
     });
   }
 
-  async addToQueue(text: any) {
+  async addToQueue(message: TelegramMessageDto) {
     try {
-      const payload = JSON.stringify(text);
+      const payload = JSON.stringify(message);
       await this.channelWrapper.sendToQueue(
         this.configService.get('rabbitmq.queue'),
         Buffer.from(payload),
       );
 
-      this.logger.debug(`Sended message: ${ text }`);
+      this.logger.debug(`Sended message: ${ message.text }`);
 
     } catch (error) {
       throw new HttpException(

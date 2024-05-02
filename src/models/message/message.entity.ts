@@ -14,9 +14,15 @@ export class Message extends BaseEntity {
 
   @Column({
     type: 'text',
-    nullable: true,
+    nullable: false,
   })
   content: string;
+
+  @Column({
+    type: 'text',
+    nullable: false,
+  })
+  chatid: string;
 
   @CreateDateColumn()
   created: Date;
