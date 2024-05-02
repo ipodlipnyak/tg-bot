@@ -2,9 +2,6 @@ name: deploy script
 on:
   workflow_call:
     inputs:
-      app:
-        required: true
-        type: string
       environment:
         description: "Server's environment. On prod it will not reset db"
         required: true
@@ -52,7 +49,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./apps/${{ inputs.app }}/Dockerfile
+          file: Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
