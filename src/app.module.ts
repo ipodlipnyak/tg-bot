@@ -9,6 +9,7 @@ import { load } from './config';
 import { EventsGateway } from './events.gateway';
 import { ProducerService } from './producer.service';
 import { ConsumerService } from './consumer.service';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { ConsumerService } from './consumer.service';
         ...configService.get('db'),
       }),
     }),
+    HttpModule,
   ],
   controllers: [
     AppController

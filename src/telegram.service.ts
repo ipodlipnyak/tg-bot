@@ -4,6 +4,9 @@ import { ProducerService } from './producer.service';
 import { ConfigService } from '@nestjs/config';
 import * as TelegramBot from 'node-telegram-bot-api';
 import { TelegramMessageDto } from './dto/telegram.dto';
+import { HttpService } from '@nestjs/axios';
+import { catchError, firstValueFrom } from 'rxjs';
+import { AxiosError } from 'axios';
 
 
 @Injectable()
@@ -14,6 +17,7 @@ export class TelegramService {
   constructor(
     private producerService: ProducerService,
     private configService: ConfigService,
+    private readonly httpService: HttpService,
   ) {
     this.bot = new TelegramBot(
       configService.get('telegram.apikey')
@@ -23,18 +27,24 @@ export class TelegramService {
   /**
    * Send message to chat
    *
-   * @see https://github.com/yagop/node-telegram-bot-api
    * @param text
    */
-  async reply(text: string, chatId: string) {
-    try {
-      await this.bot.sendMessage(
-        chatId,
-        text
-      );
-    } catch(e) {
-      this.logger.debug(e);
-    }
+  async reply(chatId: string, text: string) {
+    const apikey = this.configService.get('telegram.apikey');
+    const url = `https://api.telegram.org/bot${ apikey }/sendMessage`;
+
+    const { data } = await firstValueFrom(
+      this.httpService.post(url, {
+        chat_id: chatId,
+        text,
+      }).pipe(
+        catchError((error: AxiosError) => {
+          this.logger.error(error.response.data);
+          throw 'An error happened!';
+        }),
+      ),
+    );
+    return data;
   }
 
   /**
