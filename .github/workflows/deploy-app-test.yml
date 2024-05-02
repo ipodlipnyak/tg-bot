@@ -1,0 +1,9 @@
+name: template test
+on:
+  workflow_dispatch:
+jobs:
+  call-workflow-passing-data:
+    uses: ./.github/workflows/deploy-app.yml
+    with:
+      app: template
+      environment: test
