@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ResponseStatusEnum, RestListResponseDto, RestResponseDto } from './dto/rest-response.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
@@ -6,7 +6,9 @@ import { TelegramEventMessageInputDto } from './dto/telegram.dto';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService
+  ) {}
 
   @ApiOperation({ summary: 'Get messages list' })
   @ApiResponse({ status: 200, type: RestListResponseDto })
@@ -24,9 +26,18 @@ export class AppController {
   newMessage(
     @Body() input: TelegramEventMessageInputDto,
   ): RestResponseDto {
-    return {
+    const result = {
       status: ResponseStatusEnum.ERROR,
-      payload: [],
     };
+
+    const text = input?.message?.text;
+
+    if (!text) {
+      throw new HttpException('No text in this message', HttpStatus.BAD_REQUEST);
+    }
+    this.appService.saveMessage(input.message.text)
+
+    result.status = ResponseStatusEnum.SUCCESS;
+    return result;
   }
 }

@@ -5,11 +5,17 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { load } from './config';
+import { EventsGateway } from './events.gateway';
+import { ProducerService } from './producer.service';
+import { ConsumerService } from './consumer.service';
 
-console.log(join(__dirname, '../', 'client/dist'))
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load,
+    }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '../', 'client/dist'),
     }),
@@ -20,7 +26,14 @@ console.log(join(__dirname, '../', 'client/dist'))
       }),
     }),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [
+    AppController
+  ],
+  providers: [
+    AppService,
+    EventsGateway,
+    ProducerService,
+    ConsumerService,
+  ],
 })
 export class AppModule {}
