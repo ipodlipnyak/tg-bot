@@ -38,6 +38,7 @@ export class AppController {
     }));
     result.total = result.payload.length;
     result.limit = result.payload.length;
+    result.status = ResponseStatusEnum.SUCCESS;
 
     return result;
   }

@@ -1,26 +1,29 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
-import { RestListResponseDto } from 'src/dto/rest-response.dto';
-import { TelegramMessageDto } from 'src/dto/telegram.dto';
+import { MessagesListResponseDto, MessageDto } from 'src/dto/telegram.dto';
 
 export const useEventsStore = defineStore('events', {
   // arrow function recommended for full type inference
   state: () => ({
-    messages: [] as TelegramMessageDto[],
+    messages: [] as MessageDto[],
     lastMessage: '',
+    messagesPending: false,
   }),
 
   actions: {
     async fetchAll() {
-      this.eventsPending = true;
+      this.messagesPending = true;
 
-      const { data, pending, error, refresh } = await useFetch('/api/');
-      const response = data.value as RestListResponseDto;
+      const { data, pending, error, refresh } = await useFetch('/api/tg');
+      const response = data.value as MessagesListResponseDto;
       if (response?.status === 'success') {
-        this.events = response.payload || [];
+        this.messages = response.payload || [];
       }
 
-      this.eventsPending = false;
+      this.messagesPending = false;
     },
+    passMessage(message: string) {
+      this.lastMessage = message;
+    }
   },
 
   getters: {
