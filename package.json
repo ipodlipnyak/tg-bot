@@ -1,7 +1,7 @@
 {
-  "name": "aipulse",
+  "name": "tg-bot",
   "version": "1.0.0",
-  "description": "aipulse",
+  "description": "tg-bot",
   "private": true,
   "license": "MIT",
   "scripts": {
@@ -10,15 +10,15 @@
     "typeorm:migration:run": "npm run typeorm -- migration:run",
     "typeorm:migration:revert": "npm run typeorm -- migration:revert",
     "prebuild": "rimraf dist && rimraf client/dist",
-    "build:server": "nest build",
-    "build:client": "npm -w client run generate",
-    "build": "npm run build:server & npm run build:client",
+    "app:build:server": "nest build ---tsc webapp",
+    "app:build:client": "npm -w client run generate",
+    "app:build": "npm run build:server & npm run build:client",
+    "app:start": "nest start",
+    "app:start:dev:server": "nest start --debug --watch ---tsc webapp",
+    "app:start:dev:client": "npm -w client run dev",
+    "app:start:dev": "npm run start:dev:server && npm run start:dev:client",
+    "app:start:prod": "node dist/main",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
-    "start:dev:server": "nest start --debug --watch",
-    "start:dev:client": "npm -w client run dev",
-    "start:dev": "npm run start:dev:server && npm run start:dev:client",
-    "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -79,7 +79,7 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
+    "rootDir": ".",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
@@ -87,10 +87,16 @@
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "coverageDirectory": "./coverage",
+    "testEnvironment": "node",
+    "roots": [
+      "<rootDir>/apps/",
+      "<rootDir>/libs/"
+    ],
+    "moduleNameMapper": {
+    }
   },
   "workspaces": [
-    "client"
+    "apps/webapp/client"
   ]
 }

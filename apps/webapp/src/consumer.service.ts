@@ -2,8 +2,8 @@ import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import amqp, { ChannelWrapper } from 'amqp-connection-manager';
 import { ConfirmChannel } from 'amqplib';
-import { TelegramEventMessageInputDto, TelegramMessageDto } from 'src/dto/telegram.dto';
-import { EventsGateway } from 'src/events.gateway';
+import { TelegramEventMessageInputDto, TelegramMessageDto } from './dto/telegram.dto';
+import { EventsGateway } from './events.gateway';
 import { TelegramService } from './telegram.service';
 
 @Injectable()
