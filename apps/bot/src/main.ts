@@ -12,7 +12,7 @@ async function bootstrap() {
       urls: [ RABBITMQ_URL ],
       queue: QUEUE,
       queueOptions: {
-        durable: false
+        durable: true
       },
     },
   });
