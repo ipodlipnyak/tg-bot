@@ -9,7 +9,7 @@ import { CommonModule, EventsGateway } from '@my/common';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '../../..', 'apps/webapp/client/dist'),
+      rootPath: join(__dirname, '../../../../../..', 'apps/webapp/client/dist'),
     }),
     HttpModule,
     CommonModule
