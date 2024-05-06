@@ -99,6 +99,7 @@
       "<rootDir>/libs/"
     ],
     "moduleNameMapper": {
+      "^@my/common(|/.*)$": "<rootDir>/libs/common/src/$1"
     }
   },
   "workspaces": [
