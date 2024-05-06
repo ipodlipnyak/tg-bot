@@ -18,7 +18,7 @@ import { HttpModule } from '@nestjs/axios';
       load,
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '../', 'client/dist'),
+      rootPath: join(__dirname, '../', 'apps/webapp/client/dist'),
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
