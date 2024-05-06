@@ -1,1 +1,1 @@
-export { dataSource } from './config/db.config';
+export { dataSource } from '@my/common';
