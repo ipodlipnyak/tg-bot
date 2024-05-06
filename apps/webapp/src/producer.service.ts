@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import amqp, { ChannelWrapper } from 'amqp-connection-manager';
 import { Channel } from 'amqplib';
 import { ConfigService } from '@nestjs/config';
-import { TelegramMessageDto } from './dto/telegram.dto';
+import { TelegramMessageDto } from '@my/common';
 
 @Injectable()
 export class ProducerService {

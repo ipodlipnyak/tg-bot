@@ -60,7 +60,7 @@ export class AppController {
     }
 
     try {
-      await this.producerService.addToQueue(input);
+      await this.producerService.addToQueue(input.message);
       const messageModel = new Message();
       messageModel.content = input.message.text;
       messageModel.chatid = input.message.chat.id;
