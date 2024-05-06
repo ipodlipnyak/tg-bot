@@ -1,13 +1,12 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { BotModule } from './bot.module';
 
 const RABBITMQ_URL = process.env?.RABBITMQ_URL || 'amqp://localhost:5672';
 const QUEUE = process.env?.RABBITMQ_QUEUE || 'tgQueue';
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(BotModule, {
     transport: Transport.RMQ,
     options: {
       urls: [ RABBITMQ_URL ],
@@ -18,6 +17,6 @@ async function bootstrap() {
     },
   });
 
-  await app.listen();``
+  await app.listen();
 }
 bootstrap();

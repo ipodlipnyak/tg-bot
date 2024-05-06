@@ -21,7 +21,7 @@
     "bot:build": "npm run prebuild && nest build --tsc bot",
     "bot:start": "nest start ---tsc bot",
     "bot:start:dev": "nest start --debug --watch ---tsc bot",
-    "bot:start:prod": "node dist/apps/bot/main",
+    "bot:start:prod": "node dist/apps/bot/src/main",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
