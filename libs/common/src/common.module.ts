@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { load } from './config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { EventsGateway } from './events.gateway';
 
 @Module({
   imports: [
@@ -16,9 +15,6 @@ import { EventsGateway } from './events.gateway';
         ...configService.get('db'),
       }),
     }),
-  ],
-  providers: [
-    EventsGateway,
   ],
 })
 export class CommonModule { }

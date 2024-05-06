@@ -3,15 +3,14 @@ import { AppController } from './app.controller';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ProducerService } from './producer.service';
-import { HttpModule } from '@nestjs/axios';
-import { CommonModule, EventsGateway } from '@my/common';
+import { CommonModule } from '@my/common';
+import { EventsGateway } from './events.gateway';
 
 @Module({
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '../../../../../..', 'apps/webapp/client/dist'),
     }),
-    HttpModule,
     CommonModule
   ],
   controllers: [
