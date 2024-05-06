@@ -1,14 +1,14 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Post } from '@nestjs/common';
-import { ResponseStatusEnum, RestListResponseDto, RestResponseDto } from './dto/rest-response.dto';
+import { Body, Controller, Get, HttpException, HttpStatus, Logger, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { MessagesListResponseDto, TelegramEventMessageInputDto } from './dto/telegram.dto';
-import { TelegramService } from './telegram.service';
-import { Message } from './models';
+import { Message, MessagesListResponseDto, ResponseStatusEnum, RestListResponseDto, RestResponseDto, TelegramEventMessageInputDto } from '@my/common';
+import { ProducerService } from './producer.service';
 
 @Controller('tg')
 export class AppController {
+  private readonly logger = new Logger(AppController.name)
+
   constructor(
-    private readonly telegramService: TelegramService
+    private producerService: ProducerService,
   ) {}
 
   @ApiOperation({ summary: 'Get saved messages list' })
@@ -46,9 +46,9 @@ export class AppController {
   @ApiOperation({ summary: '' })
   @ApiResponse({ status: 200, type: RestListResponseDto })
   @Post('/message')
-  newMessage(
+  async newMessage(
     @Body() input: TelegramEventMessageInputDto,
-  ): RestResponseDto {
+  ): Promise<RestResponseDto> {
     const result = {
       status: ResponseStatusEnum.ERROR,
     };
@@ -58,7 +58,18 @@ export class AppController {
     if (!text) {
       throw new HttpException('No text in this message', HttpStatus.BAD_REQUEST);
     }
-    this.telegramService.saveMessage(input.message);
+
+    try {
+      await this.producerService.addToQueue(input);
+      const messageModel = new Message();
+      messageModel.content = input.message.text;
+      messageModel.chatid = input.message.chat.id;
+      await messageModel.save();
+      await messageModel.reload();
+    } catch (e) {
+      this.logger.debug(e);
+    }
+
 
     result.status = ResponseStatusEnum.SUCCESS;
     return result;

@@ -1,9 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Message } from './models';
-import { ProducerService } from './producer.service';
 import { ConfigService } from '@nestjs/config';
 import * as TelegramBot from 'node-telegram-bot-api';
-import { TelegramMessageDto } from './dto/telegram.dto';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
@@ -15,7 +12,6 @@ export class TelegramService {
   private bot = null;
 
   constructor(
-    private producerService: ProducerService,
     private configService: ConfigService,
     private readonly httpService: HttpService,
   ) {
@@ -45,28 +41,5 @@ export class TelegramService {
       ),
     );
     return data;
-  }
-
-  /**
-   *
-   * @param text
-   * @returns
-   */
-  async saveMessage(message: TelegramMessageDto): Promise<number | null> {
-    let result: number | null = null;
-
-    try {
-      await this.producerService.addToQueue(message);
-      const messageModel = new Message();
-      messageModel.content = message.text;
-      messageModel.chatid = message.chat.id;
-      await messageModel.save();
-      await messageModel.reload();
-      result = messageModel.id;
-    } catch (e) {
-      this.logger.error(e);
-    }
-
-    return result;
   }
 }
