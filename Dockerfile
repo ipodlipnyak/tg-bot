@@ -8,7 +8,7 @@ RUN npm run build
 
 FROM node:20 as prod
 WORKDIR /app
-COPY --from=build-stage /app/client/dist ./client/dist/
+COPY --from=build-stage /app/apps/webapp/client/dist ./apps/webapp/client/dist/
 
 COPY --from=build-stage /app/package* ./
 COPY --from=build-stage /app/node_modules ./node_modules/

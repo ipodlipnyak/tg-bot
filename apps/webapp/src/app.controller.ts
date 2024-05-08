@@ -1,7 +1,8 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Logger, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { Message, MessagesListResponseDto, ResponseStatusEnum, RestListResponseDto, RestResponseDto, TelegramEventMessageInputDto } from '@my/common';
+import { Message, MessagesListResponseDto, ResponseStatusEnum, RestResponseDto, TelegramEventMessageInputDto } from '@my/common';
 import { ProducerService } from './producer.service';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('tg')
 export class AppController {
@@ -9,6 +10,7 @@ export class AppController {
 
   constructor(
     private producerService: ProducerService,
+    private configService: ConfigService,
   ) {}
 
   @ApiOperation({ summary: 'Get saved messages list' })
@@ -44,11 +46,11 @@ export class AppController {
   }
 
   @ApiOperation({ summary: '' })
-  @ApiResponse({ status: 200, type: RestListResponseDto })
+  @ApiResponse({ status: 200, type: RestResponseDto })
   @Post('/message')
-  async newMessage(
+  newMessage(
     @Body() input: TelegramEventMessageInputDto,
-  ): Promise<RestResponseDto> {
+  ): RestResponseDto {
     const result = {
       status: ResponseStatusEnum.ERROR,
     };
@@ -60,12 +62,7 @@ export class AppController {
     }
 
     try {
-      await this.producerService.addToQueue(input.message);
-      const messageModel = new Message();
-      messageModel.content = input.message.text;
-      messageModel.chatid = input.message.chat.id;
-      await messageModel.save();
-      await messageModel.reload();
+      this.producerService.addToQueue(input.message);
     } catch (e) {
       this.logger.debug(e);
     }

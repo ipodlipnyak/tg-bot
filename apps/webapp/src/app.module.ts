@@ -5,11 +5,30 @@ import { join } from 'path';
 import { ProducerService } from './producer.service';
 import { CommonModule } from '@my/common';
 import { EventsGateway } from './events.gateway';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '../../../../../..', 'apps/webapp/client/dist'),
+      rootPath: join(__dirname, '../../../..', 'apps/webapp/client/dist'),
+    }),
+    ClientsModule.registerAsync({
+      clients: [
+        {
+          name: 'tg-rmq-client',
+          inject: [ConfigService],
+          useFactory: async (configService: ConfigService ) => ({
+            transport: Transport.RMQ,
+            options: {
+              urls: [
+                await configService.get('rabbitmq.url') as string,
+              ],
+              queue: await configService.get('rabbitmq.queueTg'),
+            }
+          }),
+        }
+      ]
     }),
     CommonModule
   ],

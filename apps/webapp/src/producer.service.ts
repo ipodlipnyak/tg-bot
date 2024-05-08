@@ -1,8 +1,11 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import amqp, { ChannelWrapper } from 'amqp-connection-manager';
 import { Channel } from 'amqplib';
 import { ConfigService } from '@nestjs/config';
 import { TelegramMessageDto } from '@my/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { catchError, lastValueFrom } from 'rxjs';
+import { AxiosError } from 'axios';
 
 @Injectable()
 export class ProducerService {
@@ -11,6 +14,7 @@ export class ProducerService {
 
   constructor(
     private configService: ConfigService,
+    @Inject('tg-rmq-client') private readonly client: ClientProxy,
   ) {
     const connection = amqp.connect([this.configService.get('rabbitmq.url')]);
     this.channelWrapper = connection.createChannel({
@@ -26,18 +30,25 @@ export class ProducerService {
   async addToQueue(message: TelegramMessageDto) {
     try {
       const payload = JSON.stringify(message);
+      const buffer = Buffer.from(payload);
+      // await this.channelWrapper.emit('test', 'blah');
+      // await this.channelWrapper.publish('wsQueue', 'wsQueue', 'test');
+
       await this.channelWrapper.sendToQueue(
         this.configService.get('rabbitmq.queue'),
-        Buffer.from(payload),
+        buffer,
       );
+
+      await lastValueFrom(this.client.send('reply', payload));
 
       this.logger.debug(`Sended message: ${ message.text }`);
 
-    } catch (error) {
-      throw new HttpException(
-        'Error adding message to queue',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+    } catch (e) {
+      this.logger.error(e);
+      // throw new HttpException(
+      //   'Error adding message to queue',
+      //   HttpStatus.INTERNAL_SERVER_ERROR,
+      // );
     }
   }
 }

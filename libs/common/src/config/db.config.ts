@@ -12,7 +12,7 @@ export const options: DataSourceOptions = {
   logging: true,
   synchronize: false,
 
-  host: env.DB_HOST,
+  host: env.DB_HOST || 'db',
   port: parseInt(env.DB_PORT) || 5432,
   username: env.DB_USER || 'ai',
   password: env.DB_PASSWORD || 'ai',

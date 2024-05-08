@@ -28,9 +28,10 @@ export class ConsumerService implements OnModuleInit {
           if (payload) {
             const message: TelegramMessageDto = JSON.parse(payload.content.toString());
             this.logger.debug(`Received message: ${ message.text || '' }`);
+            debugger
             // this.eventsGateway.server.emit('events', message.text);
-            this.telegramService.reply(message.chat.id, `Simon says ${ message.text }`);
-            channel.ack(payload);
+            // this.telegramService.reply(message.chat.id, `Simon says ${ message.text }`);
+            // channel.ack(payload);
           }
         });
       });
