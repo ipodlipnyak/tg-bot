@@ -13,6 +13,10 @@ export class BotController {
 
     @MessagePattern('reply')
     replyTg(data: string) {
+      if (!data) {
+        this.logger.warn('No data provided');
+      }
+
       const message = JSON.parse(data) as TelegramMessageDto;
       try {
         this.telegramService.reply(message.chat.id, `Simon says ${ message.text }`);

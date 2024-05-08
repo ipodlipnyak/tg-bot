@@ -30,8 +30,6 @@ export class ProducerService {
     try {
       const payload = JSON.stringify(message);
       const buffer = Buffer.from(payload);
-      // await this.channelWrapper.emit('test', 'blah');
-      // await this.channelWrapper.publish('wsQueue', 'wsQueue', 'test');
 
       const wsQueue = this.configService.get('rabbitmq.queue');
       await this.channelWrapper.sendToQueue(
@@ -39,16 +37,16 @@ export class ProducerService {
         buffer,
       );
 
-      await lastValueFrom(this.client.send('reply', payload));
+      try {
+        await lastValueFrom(this.client.send('reply', payload));
+      } catch (e) {
+        //
+      }
 
       this.logger.debug(`Sended message: ${ message.text }`);
 
     } catch (e) {
-      this.logger.error(e);
-      // throw new HttpException(
-      //   'Error adding message to queue',
-      //   HttpStatus.INTERNAL_SERVER_ERROR,
-      // );
+      this.logger.warn(e);
     }
   }
 }

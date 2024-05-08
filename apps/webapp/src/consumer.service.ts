@@ -21,7 +21,6 @@ export class ConsumerService implements OnModuleInit {
   public async onModuleInit() {
     try {
       await this.channelWrapper.addSetup(async (channel: ConfirmChannel) => {
-        debugger
         await channel.assertQueue(this.configService.get('rabbitmq.queue'), { durable: true });
 
         await channel.consume(this.configService.get('rabbitmq.queue'), async (payload) => {
