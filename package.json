@@ -1,24 +1,31 @@
 {
-  "name": "aipulse",
+  "name": "tg-bot",
   "version": "1.0.0",
-  "description": "aipulse",
+  "description": "tg-bot",
   "private": true,
   "license": "MIT",
   "scripts": {
-    "typeorm": "typeorm-ts-node-esm -d dist/ormconfig.js",
-    "typeorm:migration:generate": "npm run typeorm -- migration:generate ./src/migrations/migration",
+    "typeorm": "typeorm-ts-node-esm -d dist/apps/webapp/src/ormconfig.js",
+    "typeorm:migration:generate": "npm run typeorm -- migration:generate ./dist/apps/webapp/src/migrations/migration",
     "typeorm:migration:run": "npm run typeorm -- migration:run",
     "typeorm:migration:revert": "npm run typeorm -- migration:revert",
-    "prebuild": "rimraf dist && rimraf client/dist",
-    "build:server": "nest build",
-    "build:client": "npm -w client run generate",
-    "build": "npm run build:server & npm run build:client",
+    "prebuild": "rimraf dist && rimraf apps/webapp/client/dist",
+    "app:build:server": "npm run prebuild && nest build --tsc webapp",
+    "app:build:client": "npm -w client run generate",
+    "app:build": "npm run app:build:server & npm run app:build:client",
+    "app:start": "nest start ---tsc webapp",
+    "app:start:dev:server": "nest start --debug --watch ---tsc webapp",
+    "app:start:dev:client": "npm -w client run dev",
+    "app:start:dev": "npm run start:dev:server && npm run start:dev:client",
+    "app:start:prod": "node dist/apps/webapp/src/main",
+    "bot:build": "nest build --tsc bot",
+    "bot:start": "nest start ---tsc bot",
+    "bot:start:dev": "nest start ---tsc bot --debug --watch",
+    "bot:start:prod": "node dist/apps/bot/src/main",
+    "bot:start:debug": "node --inspect dist/apps/bot/src/main",
+    "start": "npm run app:start && npm run bot:start",
+    "build": "npm run prebuild && npm run app:build && npm run bot:build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
-    "start:dev:server": "nest start --debug --watch",
-    "start:dev:client": "npm -w client run dev",
-    "start:dev": "npm run start:dev:server && npm run start:dev:client",
-    "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -36,6 +43,7 @@
     "@nestjs/typeorm": "^10.0.2",
     "@nestjs/websockets": "^10.3.8",
     "@nestjs/platform-socket.io": "^10.3.8",
+    "@nestjs/microservices": "^10.3.8",
     "@nestjs/axios": "^3.0.2",
     "axios": "^1.6.8",
     "class-transformer": "^0.5.1",
@@ -79,7 +87,7 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
+    "rootDir": ".",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
@@ -87,10 +95,17 @@
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "coverageDirectory": "./coverage",
+    "testEnvironment": "node",
+    "roots": [
+      "<rootDir>/apps/",
+      "<rootDir>/libs/"
+    ],
+    "moduleNameMapper": {
+      "^@my/common(|/.*)$": "<rootDir>/libs/common/src/$1"
+    }
   },
   "workspaces": [
-    "client"
+    "apps/webapp/client"
   ]
 }

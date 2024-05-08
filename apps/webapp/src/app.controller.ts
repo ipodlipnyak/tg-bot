@@ -1,14 +1,16 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Post } from '@nestjs/common';
-import { ResponseStatusEnum, RestListResponseDto, RestResponseDto } from './dto/rest-response.dto';
+import { Body, Controller, Get, HttpException, HttpStatus, Logger, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { MessagesListResponseDto, TelegramEventMessageInputDto } from './dto/telegram.dto';
-import { TelegramService } from './telegram.service';
-import { Message } from './models';
+import { Message, MessagesListResponseDto, ResponseStatusEnum, RestResponseDto, TelegramEventMessageInputDto } from '@my/common';
+import { ProducerService } from './producer.service';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('tg')
 export class AppController {
+  private readonly logger = new Logger(AppController.name)
+
   constructor(
-    private readonly telegramService: TelegramService
+    private producerService: ProducerService,
+    private configService: ConfigService,
   ) {}
 
   @ApiOperation({ summary: 'Get saved messages list' })
@@ -44,7 +46,7 @@ export class AppController {
   }
 
   @ApiOperation({ summary: '' })
-  @ApiResponse({ status: 200, type: RestListResponseDto })
+  @ApiResponse({ status: 200, type: RestResponseDto })
   @Post('/message')
   newMessage(
     @Body() input: TelegramEventMessageInputDto,
@@ -58,7 +60,13 @@ export class AppController {
     if (!text) {
       throw new HttpException('No text in this message', HttpStatus.BAD_REQUEST);
     }
-    this.telegramService.saveMessage(input.message);
+
+    try {
+      this.producerService.addToQueue(input.message);
+    } catch (e) {
+      this.logger.debug(e);
+    }
+
 
     result.status = ResponseStatusEnum.SUCCESS;
     return result;

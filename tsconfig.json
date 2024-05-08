@@ -11,6 +11,14 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "@my/common": [
+        "libs/common/src"
+      ],
+      "@my/common/*": [
+        "libs/common/src/*"
+      ]
+    }
   }
 }

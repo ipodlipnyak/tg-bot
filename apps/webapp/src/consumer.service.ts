@@ -2,9 +2,8 @@ import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import amqp, { ChannelWrapper } from 'amqp-connection-manager';
 import { ConfirmChannel } from 'amqplib';
-import { TelegramEventMessageInputDto, TelegramMessageDto } from 'src/dto/telegram.dto';
-import { EventsGateway } from 'src/events.gateway';
-import { TelegramService } from './telegram.service';
+import { Message, TelegramMessageDto } from '@my/common';
+import { EventsGateway } from './events.gateway';
 
 @Injectable()
 export class ConsumerService implements OnModuleInit {
@@ -14,7 +13,6 @@ export class ConsumerService implements OnModuleInit {
   constructor(
     private configService: ConfigService,
     private eventsGateway: EventsGateway,
-    private telegramService: TelegramService,
   ) {
     const connection = amqp.connect([this.configService.get('rabbitmq.url')]);
     this.channelWrapper = connection.createChannel();
@@ -29,8 +27,14 @@ export class ConsumerService implements OnModuleInit {
           if (payload) {
             const message: TelegramMessageDto = JSON.parse(payload.content.toString());
             this.logger.debug(`Received message: ${ message.text || '' }`);
+
+            const messageModel = new Message();
+            messageModel.content = message.text;
+            messageModel.chatid = message.chat.id;
+            await messageModel.save();
+            await messageModel.reload();
+
             this.eventsGateway.server.emit('events', message.text);
-            this.telegramService.reply(message.chat.id, `Simon says ${ message.text }`);
             channel.ack(payload);
           }
         });
