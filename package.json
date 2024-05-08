@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "typeorm": "typeorm-ts-node-esm -d dist/apps/webapp/src/ormconfig.js",
-    "typeorm:migration:generate": "npm run typeorm -- migration:generate ./dist/apps/webapp/src/migrations/migration",
+    "typeorm:migration:generate": "npm run typeorm -- migration:generate ./apps/libs/common/src/migrations/migration",
     "typeorm:migration:run": "npm run typeorm -- migration:run",
     "typeorm:migration:revert": "npm run typeorm -- migration:revert",
     "prebuild": "rimraf dist && rimraf apps/webapp/client/dist",
