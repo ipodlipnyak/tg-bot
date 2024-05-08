@@ -7,6 +7,7 @@ import { CommonModule } from '@my/common';
 import { EventsGateway } from './events.gateway';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
+import { ConsumerService } from './consumer.service';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { ConfigService } from '@nestjs/config';
   providers: [
     EventsGateway,
     ProducerService,
+    ConsumerService,
   ],
 })
 export class AppModule {}

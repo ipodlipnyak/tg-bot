@@ -15,7 +15,6 @@ import { BotController } from './bot.controller';
   ],
   providers: [
     TelegramService,
-    // ConsumerService,
   ],
 })
 export class BotModule {}

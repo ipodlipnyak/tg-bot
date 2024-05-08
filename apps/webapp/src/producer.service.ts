@@ -4,8 +4,7 @@ import { Channel } from 'amqplib';
 import { ConfigService } from '@nestjs/config';
 import { TelegramMessageDto } from '@my/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { catchError, lastValueFrom } from 'rxjs';
-import { AxiosError } from 'axios';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class ProducerService {
@@ -34,8 +33,9 @@ export class ProducerService {
       // await this.channelWrapper.emit('test', 'blah');
       // await this.channelWrapper.publish('wsQueue', 'wsQueue', 'test');
 
+      const wsQueue = this.configService.get('rabbitmq.queue');
       await this.channelWrapper.sendToQueue(
-        this.configService.get('rabbitmq.queue'),
+        wsQueue,
         buffer,
       );
 
