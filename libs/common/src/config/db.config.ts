@@ -19,7 +19,7 @@ export const options: DataSourceOptions = {
   database: env.DB_DATABASE || 'ai',
 
   entities,
-  migrations: [join(__dirname, '../migrations/*.{ts,js}')],
+  migrations: [join(__dirname, '../../migrations/*.{ts,js}')],
 };
 
 export const optionsTest: DataSourceOptions = {

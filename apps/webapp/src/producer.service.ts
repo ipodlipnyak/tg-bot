@@ -28,7 +28,6 @@ export class ProducerService {
 
   async addToQueue(message: TelegramMessageDto) {
     try {
-      this.logger.debug(this.configService.get('db'));
       const payload = JSON.stringify(message);
       const buffer = Buffer.from(payload);
 

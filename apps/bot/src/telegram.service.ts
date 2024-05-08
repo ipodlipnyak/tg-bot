@@ -29,17 +29,20 @@ export class TelegramService {
     const apikey = this.configService.get('telegram.apikey');
     const url = `https://api.telegram.org/bot${ apikey }/sendMessage`;
 
-    const { data } = await firstValueFrom(
-      this.httpService.post(url, {
-        chat_id: chatId,
-        text,
-      }).pipe(
-        catchError((error: AxiosError) => {
-          this.logger.error(error.response.data);
-          throw 'An error happened!';
-        }),
-      ),
-    );
-    return data;
+    try {
+      const { data } = await firstValueFrom(
+        this.httpService.post(url, {
+          chat_id: chatId,
+          text,
+        }).pipe(
+          catchError((err: AxiosError) => {
+            throw err;
+          }),
+        ),
+      );
+      return data;
+    } catch(e) {
+      this.logger.debug(e.response.data);
+    }
   }
 }

@@ -23,7 +23,11 @@ export class BotController {
         messageModel.content = message.text;
         messageModel.chatid = message.chat.id;
         messageModel.save();
+      } catch(e) {
+        this.logger.debug(e);
+      }
 
+      try {
         this.telegramService.reply(message.chat.id, `Simon says ${ message.text }`);
       } catch (e) {
         this.logger.debug(e);
